@@ -1,0 +1,17 @@
+{
+  "name": "ceuci",
+  "private": true,
+  "scripts": {
+    "start": "meteor run"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.0.0-beta.36",
+    "bcrypt": "^1.0.3",
+    "blinktrade": "0.0.19",
+    "ccxt": "^1.10.1069",
+    "chart.js": "^2.7.2",
+    "material-design-icons": "^3.0.1",
+    "meteor-node-stubs": "^0.3.2",
+    "simpl-schema": "^1.4.2"
+  }
+}

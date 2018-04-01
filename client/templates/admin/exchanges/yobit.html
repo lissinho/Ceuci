@@ -1,0 +1,193 @@
+<template name="yobit">
+  
+    <br />
+
+    <p class="text-center">
+        <img src="https://yobit.net/images/logo.png" class="bg-dark">
+    </p>
+
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <td>
+                    <select class="form-control form-control-sm" id="selectSymbol">
+                        {{#each symbol in marketsKeys}}
+                        <option>{{symbol}}</option>
+                        {{/each}}
+                    </select>
+                </td>
+                <th class="text-right">Alta</th>
+                <td>{{lastTicker.high}}</td>
+                <th class="text-right">Baixa</th>
+                <td>{{lastTicker.low}}</td>
+                <th class="text-right">&Uacute;ltimo</th>
+                <td>{{lastTicker.last}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="py-2 bg-light">
+        <div class="container">
+
+            {{#if naoTemApiKey}}
+                <div class="row" id="alertaConfigApi">
+                    <div class="col">
+                        <div class="alert alert-warning">
+                            N&atilde;o h&aacute; nenhuma chave de API v&aacute;lida configurada para esta exchange.
+                            <button class="btn btn-secondary btn-sm float-right" id='btnMostrarConfigApi'>Configurar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="configApi" style="display:none;">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header">Configurar acesso via API</div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="col-md">
+                                        <div class="form-group">
+                                            <label for="fundo_id">Fundo</label>
+                                            <select class="form-control" id="fundo_id">
+                                                {{#each fundosOptions}}
+                                                    <option value="{{this.value}}">{{this.label}}</option>
+                                                {{/each}}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="form-group">
+                                            <label for="apikey">Chave</label>
+                                            <input type="text" class="form-control" id="apikey"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="form-group">
+                                            <label for="apisecret">Segredo</label>
+                                            <input type="text" class="form-control" id="apisecret"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <button class="btn btn-success float-right" id="btnConfigApi">Configurar</button>                                        
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{else}}
+                <div class="row">
+                    {{#each balance in balances}}
+                    <div class="col-md">
+                        <div class="card">
+                            <h5 class="card-header">{{balance.fundo.nome}}</h5>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md">
+                                        <h5 class="card-title">Balan&ccedil;o</h5>
+                                        <table class="table">
+                                            <tbody>
+                                                {{#each total in balance.balance}}
+                                                    {{#if total.value}}
+                                                    <tr>
+                                                        <th>{{total.token}}</th>
+                                                        <td>{{total.value}}</td>
+                                                    </tr>
+                                                    {{/if}}
+                                                {{/each}}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            {{/if}}
+
+            <div class="row py-3">
+                <div class="col-md-6">
+                    <div class="card mb-6 box-shadow">
+                        <div class="card-body">
+                            <h5 class="card-title">Ordens de compra</h5>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Pre&ccedil;o</th>
+                                        <th scope="col">Qtd.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each order in orderBook.bids}}
+                                    <tr>
+                                        <td>{{order.[0]}}</td>
+                                        <td>{{order.[1]}}</td>
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-6 box-shadow">
+                        <div class="card-body">
+                            <h5 class="card-title">Ordens de Venda</h5>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Pre&ccedil;o</th>
+                                        <th scope="col">Qtd.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each order in orderBook.asks}}
+                                    <tr>
+                                        <td>{{order.[0]}}</td>
+                                        <td>{{order.[1]}}</td>
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row py-3">
+                <div class="col-md-12">
+                    <div class="card mb-12 box-shadow">
+                        <div class="card-body">
+                            <h5 class="card-title">Trades</h5>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Data</th>
+                                        <th scope="col">Side</th>
+                                        <th scope="col">Pre&ccedil;o</th>
+                                        <th scope="col">Qtd.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each trade in lastTrades}}
+                                    <tr>
+                                        <th scope="row">{{formatDateTime trade.datetime}}</th>
+                                        <td>{{trade.side}}</td>
+                                        <td>{{trade.price}}</td>
+                                        <td>{{trade.amount}}</td>
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</template>

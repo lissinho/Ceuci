@@ -1,0 +1,56 @@
+<template name="fundo">
+    <h4>Fundo</h4>
+    {{#autoForm collection='Fundos' id='formFundo' type=tipoFormulario doc=documento}}
+        <fieldset>
+            <div class="row">
+                <div class="col">
+                    {{> afQuickField name='nome'}}
+                </div>
+                <div class="col">
+                    {{> afArrayField name='indices' type='update-pushArray' template='listaIndices'}}               
+                </div>
+            </div>
+            <div class="row py-3">
+                <div class="col text-center">
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </div>
+        </fieldset>
+    {{/autoForm}}
+    <br/>
+    <a href="/admin/relatorio/{{documento._id}}" class="btn btn-info">Visualizar relat&oacute;rio</a>
+</template>
+
+<template name="afArrayField_listaIndices">
+    <label>{{afFieldLabelText name=this.atts.name}}</label>
+
+    <table class="table">
+        {{#if afFieldIsInvalid name=atts.name}}
+            <tr class="table-danger">
+                <td colspan="99">{{{afFieldMessage name=atts.name}}} </td>
+            </tr>
+        {{/if}}      
+        {{#afEachArrayItem name=atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+            <tr>
+                <td>
+                    {{> afFieldInput name=this.name type="select" class='form-control' firstOption='(Selecione)' options=allMarketsOptions}}
+                </td>
+                {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount maxCount=../atts.maxCount}}
+                    <td class="text-right">
+                        <button type="button" class="btn btn-sm btn-danger autoform-remove-item">-</button>
+                    </td>
+                {{/if}}
+            </tr>
+        {{/afEachArrayItem}}
+        {{#if afArrayFieldHasLessThanMaximum name=atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+            <tr>
+                <td class="text-center" colspan="99">
+                    <button type="button" class="btn btn-sm btn-success autoform-add-item"
+                        data-autoform-field="{{atts.name}}" data-autoform-minCount="{{atts.minCount}}" data-autoform-maxCount="{{atts.maxCount}}">
+                        +
+                    </button>                    
+                </td>
+            </tr>
+        {{/if}}
+    </table>
+</template>

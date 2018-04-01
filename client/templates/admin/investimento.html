@@ -1,0 +1,122 @@
+<template name="investimento">
+    <h4>Investimento</h4>
+    {{#autoForm collection="Investimentos" id="formInvestimento" type=tipoFormulario doc=documento}}
+        <fieldset>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="fundo_id">Fundo</label>
+                        <select class="form-control" name="fundo_id" data-schema-key="fundo_id">
+                            {{#each fundosOptions}}
+                                <option value="{{this.value}}" {{fundoSelected this.value}}>{{this.label}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="pessoa_id">Pessoa</label>
+                        <select class="form-control" name="pessoa_id" data-schema-key="pessoa_id">
+                            {{#each pessoasOptions}}
+                                <option value="{{this.value}}" {{pessoaSelected this.value}}>{{this.label}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{> afQuickField name="valor"}}                    
+                </div>
+                <div class="col">
+                    {{> afQuickField name="currency" type="select" firstOption='(Selecione)' options=allCurrenciesOptions}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{> afArrayField name='tickers' type='update-pushArray' template='listaTickers'}}               
+                </div>
+            </div>
+            <div class="row py-3">
+                <div class="col text-center">
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </div>
+        </fieldset>
+    {{/autoForm}}
+
+    <table class="table">
+        {{#each ticker in tickers}}
+        <tr>
+            <th>
+                {{ticker.symbol}}
+            </th>
+            <td>
+                {{ticker.datetime}}
+            </td>
+            <td>
+                {{ticker.last}}                
+            </td>
+            <td>
+                {{ticker.high}}                
+            </td>
+            <td>
+                {{ticker.low}}                
+            </td>
+        </tr>
+        {{/each}}
+    </table>
+</template>
+
+<template name="afArrayField_listaTickers">
+    <label>{{afFieldLabelText name=this.atts.name}}</label>
+
+    <div class="list-group">
+        {{#if afFieldIsInvalid name=atts.name}}
+            <div class="list-group-item list-group-item-danger">
+                {{{afFieldMessage name=atts.name}}} 
+            </div>
+        {{/if}}      
+        {{#afEachArrayItem name=atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-md">
+                        {{> afQuickField name=this.current.datetime class='form-control'}}
+                    </div>
+                    <div class="col-md">
+                        {{> afQuickField name=this.current.source value='manual' class='form-control'}}
+                    </div>
+                    <div class="col-md">
+                        {{> afQuickField name=this.current.symbol type="select" class='form-control' firstOption='(Selecione)' options=allMarketsOptions}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md">
+                        {{> afQuickField name=this.current.last class='form-control'}}
+                    </div>
+                    <div class="col-md">
+                        {{> afQuickField name=this.current.high class='form-control'}}
+                    </div>
+                    <div class="col-md">
+                        {{> afQuickField name=this.current.low class='form-control'}}
+                    </div>
+                </div>
+                {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount maxCount=../atts.maxCount}}
+                    <div class="row">
+                        <div class="col text-right">
+                            <button type="button" class="btn btn-danger autoform-remove-item">Remover</button>
+                        </div>                        
+                    </div>
+                {{/if}}
+            </div>
+        {{/afEachArrayItem}}
+        {{#if afArrayFieldHasLessThanMaximum name=atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+            <div class="list-group-item">
+                <button type="button" class="btn btn-success autoform-add-item"
+                    data-autoform-field="{{atts.name}}" data-autoform-minCount="{{atts.minCount}}" data-autoform-maxCount="{{atts.maxCount}}">
+                    Adicionar
+                </button>
+            </div>
+        {{/if}}
+    </div>
+</template>

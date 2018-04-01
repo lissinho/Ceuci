@@ -1,0 +1,53 @@
+<template name="pessoa">
+    <h4>Pessoa</h4>
+    {{#autoForm id="formPessoa" collection="Pessoas" type=tipoFormulario doc=documento}}
+        <fieldset>
+            <div class="row">
+                <div class="col">
+                    {{> afQuickField name="nome"}} 
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md">
+                    {{> afQuickField name="dataDeNascimento"}} 
+                </div>
+                <div class="col-md">
+                    {{> afQuickField name="sexo"}} 
+                </div>
+                <div class="col-md">
+                    {{> afQuickField name="telefone"}} 
+                </div>
+                <div class="col-md">
+                    {{> afQuickField name="cpf"}} 
+                </div>
+                <div class="col-md">
+                    {{> afQuickField name="rg"}} 
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md">
+                    {{> afQuickField name="cep"}} 
+                </div>
+                <div class="col-md">
+                    {{> afQuickField name="endereco"}} 
+                </div>
+                <div class="col-md">
+                    {{> afQuickField name="bairro"}} 
+                </div>
+                <div class="col-md">
+                    {{> afQuickField name="cidade"}} 
+                </div>
+                <div class="col-md">
+                    {{> afQuickField name="estado"}} 
+                </div>
+            </div>
+            <div class="row py-3">
+                <div class="col text-center">
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </div>
+        </fieldset>
+    {{/autoForm}}
+    <br/>
+    <a href="/admin/investimento/pessoa/{{documento._id}}" class="btn btn-success">Registrar investimento</a>
+</template>
