@@ -23,10 +23,13 @@ Meteor.startup(() => {
 
     (async function () {
 
+<<<<<<< HEAD
         let exchanges = []
         var markets = []
         var currencies = []
 
+=======
+>>>>>>> 353f9166500434c645642d812a2828c10299f7b4
         let foxbit = new ccxt.foxbit();
         exchanges.push('foxbit')
 
