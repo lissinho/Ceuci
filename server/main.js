@@ -19,39 +19,10 @@ Meteor.startup(() => {
 
     (async function () {
 
-        // ============================================
-        // WEBSOCKET
-
-        //var BlinkTradeRest = require("blinktrade").BlinkTradeRest;
-        //var blinktrade = new BlinkTradeRest({ currency: "BRL" });
-
-        //blinktrade.ticker().then(function (ticker) {
-        //    console.log(ticker);
-        //});
-
-        //var BlinkTradeWS = require("blinktrade").BlinkTradeWS;
-        //var blinktrade = new BlinkTradeWS({ prod: true });
-
-        //blinktrade.connect().then(function () {
-        //    // Connected
-        //    return blinktrade.login({ username: "lissinho@gmail.com", password: "Umgnet12" });
-        //}).then(function () {
-        //    console.log("conectado")
-        //});
-
-
-        // let foxbit = new ccxt.foxbit({
-        //     apiKey: '2Af7mKdwntZ6gDbYUJRnFg1G5gfZTe3kI2B7LyEIIQE',
-        //     secret: '7w6C6TaVp8rHLFvKDpXtDi3vUJoknEbEGFA0YXDm2dQ',
-        // });
         let foxbit = new ccxt.foxbit();
 
         let mercadobitcoin = new ccxt.mercado();
 
-        // let binance = new ccxt.binance({
-        //     apiKey: 'dMizRgRTtwF5h3VRGvr9MMQWpudTdzRMt6TmdpvTEmwI2LOCIdiuRGh2QMzW8MuP',
-        //     secret: '7x848wy1BVdaCveypCrCJcv91l0gahFFSm2ErHkFQBMcNgmMh2QCXDL8lc5mrjQ0',
-        // });
         let binance = new ccxt.binance();
 
         let hitbtc = new ccxt.hitbtc2();
