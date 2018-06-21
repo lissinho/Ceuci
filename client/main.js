@@ -1,20 +1,22 @@
-import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating'
+import { ReactiveVar } from 'meteor/reactive-var'
 
-import './routes.js';
-import './helpers.js';
+import './routes.js'
+import './helpers.js'
 
 // languages-management
-T9n.setLanguage('pt');
-TAPi18n.setLanguage("pt-BR");
+T9n.setLanguage('pt')
+TAPi18n.setLanguage("pt-BR")
 
-Meteor.subscribe("fundos");
-Meteor.subscribe("pessoas");
-Meteor.subscribe("investimentos");
+Meteor.subscribe("fundos")
+Meteor.subscribe("pessoas")
+Meteor.subscribe("investimentos")
+Meteor.subscribe("relatorios")
 
-let allMarkets = new ReactiveVar(['BTC/BRL'])
-let allCurrencies = new ReactiveVar(['BRL'])
-let generalErrors = new ReactiveVar([]);
+let allExchanges = new ReactiveVar([])
+let allMarkets = new ReactiveVar([])
+let allCurrencies = new ReactiveVar([])
+let generalErrors = new ReactiveVar([])
 
 handleGeneralError = function (error) {
     if (error) {
@@ -26,29 +28,23 @@ handleGeneralError = function (error) {
 
 handleLoadAllMarkets = (error, data) => {
     handleGeneralError(error)
-    var marks = allMarkets.get()
-    data.map(function(i){
-        if (!marks.some(function(y){ return (y == i) })){
-            marks.push(i)
-        }
-    })
-    marks.sort()
-    allMarkets.set(marks)
+    allMarkets.set(data)
+}
+
+getAllMarkets = () => {
+    return allMarkets.get()
 }
 
 handleLoadAllCurrencies = (error, data) => {
     handleGeneralError(error)
-    var curs = allCurrencies.get()
-    data.map(function(i){
-        if (!curs.some(function(y){ return (y == i) })){
-            curs.push(i)
-        }
-    })
-    curs.sort()
-    allCurrencies.set(curs)
+    allCurrencies.set(data)
 }
 
 Meteor.startup(() => {
+
+    Meteor.call('exchanges', function (error, data) {
+        allExchanges.set(data);
+    })
 
     Meteor.call('exchanges.markets', function (error, data) {
         handleLoadAllMarkets(error, data);
@@ -59,6 +55,12 @@ Meteor.startup(() => {
     })
 
 })
+
+Handlebars.registerHelper("allExchangesOptions", function () {
+    return allExchanges.get().map(function(i){
+        return { label: i, value: i}
+    });
+});
 
 Handlebars.registerHelper("allMarketsOptions", function () {
     return allMarkets.get().map(function(i){

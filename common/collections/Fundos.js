@@ -22,9 +22,14 @@ Fundos.attachSchema(new SimpleSchema({
         type: Array
     },
     'indices.$': {
+        type: Object
+    },
+    'indices.$.exchange': {
+        type: String
+    },
+    'indices.$.market': {
         type: String
     }
-
 }));
 
 Fundos.allow({

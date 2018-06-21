@@ -45,7 +45,43 @@ Template.investimento.helpers({
     tickers() {
         return Template.instance().tickers.get();
     },
-});
+})
+
+Template.investimento.events({
+    'change .selectExchange': function (event, instance) {
+        var exchange = $(event.target).val()
+        var selectMarket = $('[data-exchange="' + event.target.name + '"]')
+        $(selectMarket).hide()
+        Meteor.call(exchange + '.loadMarkets', function (error, data) {
+            $(selectMarket)
+                .find('option')
+                .remove()
+                .end()
+
+            $(selectMarket)
+                .append($("<option></option>")
+                            .text('(Selecione)')); 
+
+            $.each(data, function(i) {   
+                $(selectMarket)
+                    .append($("<option></option>")
+                               .attr("value",i)
+                               .text(i)); 
+           });
+           $(selectMarket).show()
+        })
+    },
+    'change .selectMarket': function (event, instance) {
+        var symbol = $(event.target).val()
+        var exchange = $('[name="' + $(event.target).data('exchange') + '"]').val()
+        var sel = '[data-market="' + event.target.name + '"]'
+        Meteor.call(exchange + '.fetchTicker', symbol, function (error, data) {
+            $("input[name$='high']" + sel).val(data.high)
+            $("input[name$='low']" + sel).val(data.low)
+            $("input[name$='last']" + sel).val(data.last)
+        })
+    }    
+})
 
 AutoForm.addHooks('formInvestimento', {
     onSuccess: function (formType, result) {

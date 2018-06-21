@@ -1,0 +1,7 @@
+{
+    "galaxy.meteor.com": {
+      "env": {
+        "MONGO_URL": "mongodb://ceucimaster:9Mg52FRyCFYKcJN8Q4y3@ds139919.mlab.com:39919/ceuci"
+      }
+    }
+}

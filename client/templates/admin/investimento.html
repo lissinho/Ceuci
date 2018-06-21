@@ -81,24 +81,24 @@
             <div class="list-group-item">
                 <div class="row">
                     <div class="col-md">
-                        {{> afQuickField name=this.current.datetime class='form-control'}}
+                        {{> afQuickField name=this.current.datetime type='datetime-local' class='form-control'}}
                     </div>
                     <div class="col-md">
-                        {{> afQuickField name=this.current.source value='manual' class='form-control'}}
+                        {{> afQuickField name=this.current.source type="select" class='form-control selectExchange' firstOption='manual' options=allExchangesOptions}}
                     </div>
                     <div class="col-md">
-                        {{> afQuickField name=this.current.symbol type="select" class='form-control' firstOption='(Selecione)' options=allMarketsOptions}}
+                        {{> afQuickField name=this.current.symbol type="select" class='form-control selectMarket' firstOption='(Selecione)' options=allMarketsOptions data-exchange=this.current.source}}
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md">
-                        {{> afQuickField name=this.current.last class='form-control'}}
+                        {{> afQuickField name=this.current.last class='form-control' data-market=this.current.symbol}}
                     </div>
                     <div class="col-md">
-                        {{> afQuickField name=this.current.high class='form-control'}}
+                        {{> afQuickField name=this.current.high class='form-control' data-market=this.current.symbol}}
                     </div>
                     <div class="col-md">
-                        {{> afQuickField name=this.current.low class='form-control'}}
+                        {{> afQuickField name=this.current.low class='form-control' data-market=this.current.symbol}}
                     </div>
                 </div>
                 {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount maxCount=../atts.maxCount}}

@@ -14,54 +14,41 @@ Meteor.startup(() => {
         return Investimentos.find();
     });
 
+    Meteor.publish("relatorios", function () {
+        return Relatorios.find();
+    });
+
     'use strict';
     const ccxt = require('ccxt');
 
     (async function () {
 
-        // ============================================
-        // WEBSOCKET
+        let exchanges = []
+        var markets = []
+        var currencies = []
 
-        //var BlinkTradeRest = require("blinktrade").BlinkTradeRest;
-        //var blinktrade = new BlinkTradeRest({ currency: "BRL" });
-
-        //blinktrade.ticker().then(function (ticker) {
-        //    console.log(ticker);
-        //});
-
-        //var BlinkTradeWS = require("blinktrade").BlinkTradeWS;
-        //var blinktrade = new BlinkTradeWS({ prod: true });
-
-        //blinktrade.connect().then(function () {
-        //    // Connected
-        //    return blinktrade.login({ username: "lissinho@gmail.com", password: "Umgnet12" });
-        //}).then(function () {
-        //    console.log("conectado")
-        //});
-
-
-        // let foxbit = new ccxt.foxbit({
-        //     apiKey: '2Af7mKdwntZ6gDbYUJRnFg1G5gfZTe3kI2B7LyEIIQE',
-        //     secret: '7w6C6TaVp8rHLFvKDpXtDi3vUJoknEbEGFA0YXDm2dQ',
-        // });
         let foxbit = new ccxt.foxbit();
+        exchanges.push('foxbit')
 
         let mercadobitcoin = new ccxt.mercado();
+        exchanges.push('mercadobitcoin')
 
-        // let binance = new ccxt.binance({
-        //     apiKey: 'dMizRgRTtwF5h3VRGvr9MMQWpudTdzRMt6TmdpvTEmwI2LOCIdiuRGh2QMzW8MuP',
-        //     secret: '7x848wy1BVdaCveypCrCJcv91l0gahFFSm2ErHkFQBMcNgmMh2QCXDL8lc5mrjQ0',
-        // });
         let binance = new ccxt.binance();
+        exchanges.push('binance')
 
         let hitbtc = new ccxt.hitbtc2();
+        exchanges.push('hitbtc')
         
         let livecoin = new ccxt.livecoin();
+        exchanges.push('livecoin')
 
         let bitfinex = new ccxt.bitfinex2();
+        exchanges.push('bitfinex')
 
         let yobit = new ccxt.yobit();
+        exchanges.push('yobit')
 
+        exchanges.push('bitcointrade')
 
         Meteor.methods({
 
@@ -69,16 +56,51 @@ Meteor.startup(() => {
             // 'exchanges.markets'() {
             //     return exchangesMarkets;
             // },
+            'exchanges'() {
+                return exchanges
+            },
             async 'exchanges.markets'(){
-                // var c1 = await hitbtc.loadMarkets();
-                var c1 = await yobit.loadMarkets();
+                if (markets.length > 0) {
+                    return markets
+                }
+                var excs = []
+                excs.push(await hitbtc.loadMarkets())
+                // excs.push(await yobit.loadMarkets())
+                excs.push(await binance.loadMarkets())
+                excs.push(await mercadobitcoin.loadMarkets())
+
+                excs.forEach(e => {
+                    Object.keys(e).map(function(i){
+                        if (!markets.some(function(y){ return (y == i) })){
+                            markets.push(i)
+                        }
+                    })    
+                })
+                markets.sort()
                 
-                return Object.keys(c1);
+                return markets;
             },
             async 'exchanges.currencies'(){
-                var c1 = await yobit.currencies;
+                if (currencies.length > 0) {
+                    return currencies
+                }
 
-                return Object.keys(c1);
+                var excs = []
+                excs.push(await hitbtc.currencies)
+                // excs.push(await yobit.currencies)
+                excs.push(await binance.currencies)
+                excs.push(await mercadobitcoin.currencies)
+
+                excs.forEach(e => {
+                    Object.keys(e).map(function(i){
+                        if (!currencies.some(function(y){ return (y == i) })){
+                            currencies.push(i)
+                        }
+                    })    
+                })
+                currencies.sort()
+                
+                return currencies;
             },
             async 'exchanges.fetchTickers'(){
                 var tickers = [];
@@ -123,6 +145,9 @@ Meteor.startup(() => {
             // },
 
             // FOXBIT
+            'foxbit.loadMarkets'() {
+                return {'BTC/BRL': {}}
+            },
             async 'foxbit.fetchTicker'() {
                 return await foxbit.fetchTicker('BTC/BRL');
             },
@@ -150,10 +175,10 @@ Meteor.startup(() => {
                                 let bal = await foxbitTrader.fetchBalance();
 
                                 var resp = [];
-                                resp.push({ 'name': 'BRL', 'value': bal.Responses[0][4].BRL / 1e8 });
-                                resp.push({ 'name': 'BRL_locked', 'value': bal.Responses[0][4].BRL_locked / 1e8 });
-                                resp.push({ 'name': 'BTC', 'value': bal.Responses[0][4].BTC / 1e8 });
-                                resp.push({ 'name': 'BTC_locked', 'value': bal.Responses[0][4].BTC_locked / 1e8 });
+                                resp.push({ 'token': 'BRL', 'value': bal.Responses[0][4].BRL / 1e8 });
+                                resp.push({ 'token': 'BRL_locked', 'value': bal.Responses[0][4].BRL_locked / 1e8 });
+                                resp.push({ 'token': 'BTC', 'value': bal.Responses[0][4].BTC / 1e8 });
+                                resp.push({ 'token': 'BTC_locked', 'value': bal.Responses[0][4].BTC_locked / 1e8 });
                         
                                 lista.push({
                                     fundo: Fundos.findOne(trader.fundo_id),
@@ -459,6 +484,72 @@ Meteor.startup(() => {
                                 })                                
                             } catch (error) {
                                 throw new Meteor.Error('yobit.fetchBalance.error', error.message);   
+                            }
+                        }
+                    }
+                    return lista.length > 0 ? lista : null;
+                }
+                return null;
+            },
+
+
+            // BitcoinTrade
+            async 'bitcointrade.loadMarkets'() {
+                return {
+                    "BTC/BRL": {},
+                    "ETH/BRL": {}
+                }
+            },
+            async 'bitcointrade.fetchTicker'(symbol) {
+                var currencies = symbol.split("/")
+                var result = HTTP.get('https://api.bitcointrade.com.br/v1/public/' + currencies[0] + '/ticker')
+                return result.data.data
+            },
+            async 'bitcointrade.fetchTrades'(symbol) {
+                var currencies = symbol.split("/")
+                var result = HTTP.get('https://api.bitcointrade.com.br/v1/public/' + currencies[0] + '/trades', {
+                    params: {
+                        start_time: moment().subtract(30,'days').format(),
+                        end_time: moment().add(1, 'days').format(),
+                        page_size: 100,
+                        current_page: 1
+                    }
+                })
+                return result.data.data.trades
+            },
+            async 'bitcointrade.fetchOrderBook'(symbol) {
+                var currencies = symbol.split("/")
+                var result = HTTP.get('https://api.bitcointrade.com.br/v1/public/' + currencies[0] + '/orders')
+                return result.data.data
+            },
+            async 'bitcointrade.fetchBalance'() {
+                var trader = Traders.findOne({ user_id: Meteor.userId() });
+                if (trader != null) {
+                    var lista = [];
+                    for (let index = 0; index < trader.apiKeys.length; index++) {
+                        const element = trader.apiKeys[index];
+                        if (element.exchange === 'bitcointrade'){
+                            try {
+                                var result = HTTP.get('https://api.bitcointrade.com.br/v1/wallets/balance', {
+                                    headers: {
+                                        Authorization: 'ApiToken ' + element.key
+                                    }
+                                })
+                                if (result == undefined) {
+                                    return
+                                }
+                                lista.push({
+                                    fundo: Fundos.findOne(trader.fundo_id),
+                                    balance: result.data.data.map(x => {
+                                        return {
+                                            token: x.currency_code,
+                                            value: x.available_amount,
+                                            locked: x.locked_amount
+                                        }
+                                    })
+                                })             
+                            } catch (error) {
+                                throw new Meteor.Error('bitcointrade.fetchBalance.error', error.message);   
                             }
                         }
                     }

@@ -33,7 +33,10 @@
         {{#afEachArrayItem name=atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
             <tr>
                 <td>
-                    {{> afFieldInput name=this.name type="select" class='form-control' firstOption='(Selecione)' options=allMarketsOptions}}
+                    {{> afFieldInput name=this.current.exchange type="select" class='form-control selectExchange' firstOption='(Selecione)' options=allExchangesOptions}}
+                </td>
+                <td>
+                    {{> afFieldInput name=this.current.market type="select" class='form-control' firstOption='(Selecione)' options=allMarketsOptions data-exchange=this.current.exchange}}
                 </td>
                 {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount maxCount=../atts.maxCount}}
                     <td class="text-right">

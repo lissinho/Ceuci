@@ -36,7 +36,8 @@ Traders.attachSchema(new SimpleSchema({
         type: String
     },
     "apiKeys.$.secret": {
-        type: String
+        type: String,
+        optional: true
     }
 
 }));

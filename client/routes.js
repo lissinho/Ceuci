@@ -86,6 +86,12 @@ exchangeRoutes.route('/yobit', {
     }
 });
 
+exchangeRoutes.route('/bitcointrade', {
+    action: function (params, queryParams) {
+        BlazeLayout.render('App_body', { main: 'bitcointrade' });
+    }
+});
+
 exchangeRoutes.route('/', {
     action: function (params, queryParams) {
         BlazeLayout.render('App_body', { main: 'exchanges' });
